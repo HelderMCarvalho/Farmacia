@@ -39,9 +39,6 @@ para a constipação pedem para a obstipação);
 
 namespace LP_TP1_Farmacia
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-
     class Medicamento
     {
         private string nome;
@@ -50,10 +47,6 @@ namespace LP_TP1_Farmacia
         private bool tipo;
     }
 
-=======
->>>>>>> 0bb96d0c1688cdedb1a53edbfdd676e0deb3eac0
-=======
->>>>>>> 0bb96d0c1688cdedb1a53edbfdd676e0deb3eac0
     class Program
     {
         static void Main(string[] args)
