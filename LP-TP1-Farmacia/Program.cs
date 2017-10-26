@@ -47,12 +47,29 @@ namespace LP_TP1_Farmacia
         private bool tipo;
     }
 
+    class Funcionario
+    {
+        private int id;
+        private string nome;
+        private string funcao;
+
+        public Funcionario(int id, string nome, string funcao)
+        {
+            this.Id = id;
+            this.Nome = nome;
+            this.Funcao = funcao;
+        }
+
+        public int Id { get => id; set => id = value; }
+        public string Nome { get => nome; set => nome = value; }
+        public string Funcao { get => funcao; set => funcao = value; }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
-            Boas Pessoas
-            Más Pessoas
+
         }
     }
 }
