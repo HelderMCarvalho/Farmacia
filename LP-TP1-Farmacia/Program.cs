@@ -39,6 +39,29 @@ para a constipação pedem para a obstipação);
 
 namespace LP_TP1_Farmacia
 {
+    class Cliente
+    {
+        string nome;
+        float dinheiro;
+        List<Medicamento> receita;
+
+
+        //Get e Sets
+        public string Nome { get => nome; set => nome = value; }
+        public float Dinheiro { get => dinheiro; set => dinheiro = value; }
+        public List<Medicamento> Receita { get => receita; set => receita = value; }
+
+
+        //Construtor
+        public Cliente(string nome, float dinheiro, List<Medicamento> receita)
+        {
+            this.nome = nome;
+            this.dinheiro = dinheiro;
+            this.receita = receita;
+        }
+
+       
+    }
     class Medicamento
     {
         private string nome;
