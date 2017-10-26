@@ -45,14 +45,29 @@ namespace LP_TP1_Farmacia
         private float preco;
         private float quantidade;
         private bool tipo;
+
+        //GETS E SETS
+
+        public string Nome { get => nome; set => nome = value; }
+        public float Preco { get => preco; set => preco = value; }
+        public float Quantidade { get => quantidade; set => quantidade = value; }
+        public bool Tipo { get => tipo; set => tipo = value; }
+
+        //Construtor
+
+        public Medicamento(string nome, float preco, float quantidade, bool tipo)
+        {
+            this.nome = nome;
+            this.preco = preco;
+            this.quantidade = quantidade;
+            this.tipo = tipo;
+        }
     }
 
     class Program
     {
         static void Main(string[] args)
         {
-            Boas Pessoas
-            Más Pessoas
         }
     }
 }
