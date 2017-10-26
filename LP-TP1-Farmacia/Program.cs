@@ -43,42 +43,42 @@ namespace LP_TP1_Farmacia
     {
         string nome;
         float dinheiro;
-        List<Medicamento> receita;
-
+        List<Receita> receitas;
 
         //Get e Sets
+
         public string Nome { get => nome; set => nome = value; }
         public float Dinheiro { get => dinheiro; set => dinheiro = value; }
-        public List<Medicamento> Receita { get => receita; set => receita = value; }
-
+        public List<Receita> Receitas { get => receitas; set => receitas = value; }
 
         //Construtor
-        public Cliente(string nome, float dinheiro, List<Medicamento> receita)
+
+        public Cliente(string nome, float dinheiro, List<Receita> receitas)
         {
             this.nome = nome;
             this.dinheiro = dinheiro;
-            this.receita = receita;
+            this.receitas = receitas;
         }
 
-       
+        
     }
     class Medicamento
     {
         private string nome;
         private float preco;
-        private float quantidade;
+        private int quantidade;
         private bool tipo;
 
         //GETS E SETS
 
         public string Nome { get => nome; set => nome = value; }
         public float Preco { get => preco; set => preco = value; }
-        public float Quantidade { get => quantidade; set => quantidade = value; }
+        public int Quantidade { get => quantidade; set => quantidade = value; }
         public bool Tipo { get => tipo; set => tipo = value; }
 
         //Construtor
 
-        public Medicamento(string nome, float preco, float quantidade, bool tipo)
+        public Medicamento(string nome, float preco, int quantidade, bool tipo)
         {
             this.nome = nome;
             this.preco = preco;
@@ -87,11 +87,16 @@ namespace LP_TP1_Farmacia
         }
     }
 
+    class Receita
+    {
+        List<Medicamento> receita;
+    }
+
     class Funcionario
     {
         private int id;
         private string nome;
-        private string funcao;
+        private string funcao; /* Chefe e Base */
 
         public Funcionario(int id, string nome, string funcao)
         {
@@ -103,6 +108,28 @@ namespace LP_TP1_Farmacia
         public int Id { get => id; set => id = value; }
         public string Nome { get => nome; set => nome = value; }
         public string Funcao { get => funcao; set => funcao = value; }
+    }
+
+    class Farmacia
+    {
+        List<Funcionario> funcionarios;
+        List<Cliente> clientes;
+        List<Medicamento> medicamentos;
+        
+        //GETS E SETS
+
+        public List<Funcionario> Funcionarios { get => funcionarios; set => funcionarios = value; }
+        public List<Cliente> Clientes { get => clientes; set => clientes = value; }
+        public List<Medicamento> Medicamentos { get => medicamentos; set => medicamentos = value; }
+
+        //Construtor
+
+        public Farmacia(List<Funcionario> funcionarios, List<Cliente> clientes, List<Medicamento> medicamentos)
+        {
+            this.Funcionarios = funcionarios;
+            this.Clientes = clientes;
+            this.Medicamentos = medicamentos;
+        }
     }
 
     class Program
