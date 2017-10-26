@@ -7,3 +7,6 @@ LP-TP1-Farmacia/obj/Debug/LP-TP1-Farmacia.csproj.CoreCompileInputs.cache
 .vs/LP-TP1-Farmacia/v15/sqlite3/storage.ide
 LP-TP1-Farmacia/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 LP-TP1-Farmacia/obj/Debug/LP-TP1-Farmacia.csproj.CoreCompileInputs.cache
+*.ide
+*.cache
+.vs/LP-TP1-Farmacia/v15/.suo
