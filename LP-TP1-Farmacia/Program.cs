@@ -51,7 +51,7 @@ namespace LP_TP1_Farmacia
     {
         static void Main(string[] args)
         {
-            fff
+            PANUCOS
         }
     }
 }
