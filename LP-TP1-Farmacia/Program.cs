@@ -46,21 +46,17 @@ namespace LP_TP1_Farmacia
         List<Receita> receitas;
 
         //Get e Sets
-
         public string Nome { get => nome; set => nome = value; }
         public float Dinheiro { get => dinheiro; set => dinheiro = value; }
         public List<Receita> Receitas { get => receitas; set => receitas = value; }
 
         //Construtor
-
         public Cliente(string nome, float dinheiro, List<Receita> receitas)
         {
             this.nome = nome;
             this.dinheiro = dinheiro;
             this.receitas = receitas;
         }
-
-        
     }
     class Medicamento
     {
@@ -70,14 +66,12 @@ namespace LP_TP1_Farmacia
         private bool tipo;
 
         //GETS E SETS
-
         public string Nome { get => nome; set => nome = value; }
         public float Preco { get => preco; set => preco = value; }
         public int Quantidade { get => quantidade; set => quantidade = value; }
         public bool Tipo { get => tipo; set => tipo = value; }
 
         //Construtor
-
         public Medicamento(string nome, float preco, int quantidade, bool tipo)
         {
             this.nome = nome;
@@ -89,7 +83,22 @@ namespace LP_TP1_Farmacia
 
     class Receita
     {
-        List<Medicamento> receita;
+        int codigo;
+        List<Medicamento> medicamentos;
+        bool entregue;
+
+        //Gets e Sets
+        public int Codigo { get => codigo; set => codigo = value; }
+        public bool Entregue { get => entregue; set => entregue = value; }
+        public List<Medicamento> Medicamentos { get => medicamentos; set => medicamentos = value; }
+
+        //Construtor
+        public Receita(int codigo, List<Medicamento> medicamentos, bool entregue)
+        {
+            this.codigo = codigo;
+            this.medicamentos = medicamentos;
+            this.entregue = entregue;
+        }
     }
 
     class Funcionario
@@ -98,16 +107,18 @@ namespace LP_TP1_Farmacia
         private string nome;
         private string funcao; /* Chefe e Base */
 
-        public Funcionario(int id, string nome, string funcao)
-        {
-            this.Id = id;
-            this.Nome = nome;
-            this.Funcao = funcao;
-        }
-
+        //Gets e Sets
         public int Id { get => id; set => id = value; }
         public string Nome { get => nome; set => nome = value; }
         public string Funcao { get => funcao; set => funcao = value; }
+
+        //Construtor
+        public Funcionario(int id, string nome, string funcao)
+        {
+            this.id = id;
+            this.nome = nome;
+            this.funcao = funcao;
+        }
     }
 
     class Farmacia
@@ -115,20 +126,21 @@ namespace LP_TP1_Farmacia
         List<Funcionario> funcionarios;
         List<Cliente> clientes;
         List<Medicamento> medicamentos;
+        float dinheiro;
         
         //GETS E SETS
-
         public List<Funcionario> Funcionarios { get => funcionarios; set => funcionarios = value; }
         public List<Cliente> Clientes { get => clientes; set => clientes = value; }
         public List<Medicamento> Medicamentos { get => medicamentos; set => medicamentos = value; }
+        public float Dinheiro { get => dinheiro; set => dinheiro = value; }
 
         //Construtor
-
-        public Farmacia(List<Funcionario> funcionarios, List<Cliente> clientes, List<Medicamento> medicamentos)
+        public Farmacia(List<Funcionario> funcionarios, List<Cliente> clientes, List<Medicamento> medicamentos, float dinheiro)
         {
-            this.Funcionarios = funcionarios;
-            this.Clientes = clientes;
-            this.Medicamentos = medicamentos;
+            this.funcionarios = funcionarios;
+            this.clientes = clientes;
+            this.medicamentos = medicamentos;
+            this.dinheiro = dinheiro;
         }
     }
 
@@ -136,7 +148,75 @@ namespace LP_TP1_Farmacia
     {
         static void Main(string[] args)
         {
-
+            bool acabou = false;
+            while (!acabou)
+            {
+                Console.WriteLine("Bem-vindo à Farmácia CORARE");
+                Console.WriteLine("\n----------MENU----------");
+                Console.WriteLine("\nEscolha uma opção:");
+                Console.WriteLine("1 - Comprar medicamentos");
+                Console.WriteLine("2 - Mostrar receita");
+                Console.WriteLine("3 - Procurar e verificar se existem medicamentos");
+                Console.WriteLine("4 - Devolver medicamentos");
+                Console.WriteLine("5 - Mostrar valor total em medicamentos");
+                Console.WriteLine("6 - Repor stock");
+                Console.WriteLine("0 - SAIR");
+                Console.Write("\nA sua opção: ");
+                string opcao = Console.ReadLine();
+                switch (opcao)
+                {
+                    case "1":
+                        {
+                            //Mostrar todos os medicamentos
+                            //Verificar se existem as quantidades do medicamento pedido
+                            //Pagar medicamentos
+                            Console.Clear();
+                            break;
+                        }
+                    case "2":
+                        {
+                            //Verificar se existem as quantidades do medicamento pedido
+                            //Pagar medicamentos
+                            Console.Clear();
+                            break;
+                        }
+                    case "3":
+                        {
+                            //Mostrar todos os medicamentos
+                            Console.Clear();
+                            break;
+                        }
+                    case "4":
+                        {
+                            //Pedir código de venda
+                            //Mostrar os medicamentos comprados e selecionar o que pretende devolver
+                            Console.Clear();
+                            break;
+                        }
+                    case "5":
+                        {
+                            //Pedir password de admin
+                            //Mostrar valor total em medicamentos
+                            //Mostrar por tipo
+                            Console.Clear();
+                            break;
+                        }
+                    case "6":
+                        {
+                            //Pedir password de admin
+                            //Mostrar a lista de medicamentos
+                            //Introduzir o código do medicamento e a quantidade a adicionar ao stock
+                            Console.Clear();
+                            break;
+                        }
+                    default:
+                        {
+                            Console.WriteLine("\nMuito obrigado pela sua preferência!");
+                            acabou = true;
+                            break;
+                        }
+                }
+            }
         }
     }
 }

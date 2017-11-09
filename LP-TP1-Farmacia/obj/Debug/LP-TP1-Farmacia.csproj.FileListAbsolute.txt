@@ -1,0 +1,7 @@
+E:\1 Helder\Projetos\VisualStudio\LP-TP1-Farmacia\LP-TP1-Farmacia\bin\Debug\LP-TP1-Farmacia.exe.config
+E:\1 Helder\Projetos\VisualStudio\LP-TP1-Farmacia\LP-TP1-Farmacia\bin\Debug\LP-TP1-Farmacia.exe
+E:\1 Helder\Projetos\VisualStudio\LP-TP1-Farmacia\LP-TP1-Farmacia\bin\Debug\LP-TP1-Farmacia.pdb
+E:\1 Helder\Projetos\VisualStudio\LP-TP1-Farmacia\LP-TP1-Farmacia\obj\Debug\LP-TP1-Farmacia.csprojResolveAssemblyReference.cache
+E:\1 Helder\Projetos\VisualStudio\LP-TP1-Farmacia\LP-TP1-Farmacia\obj\Debug\LP-TP1-Farmacia.csproj.CoreCompileInputs.cache
+E:\1 Helder\Projetos\VisualStudio\LP-TP1-Farmacia\LP-TP1-Farmacia\obj\Debug\LP-TP1-Farmacia.exe
+E:\1 Helder\Projetos\VisualStudio\LP-TP1-Farmacia\LP-TP1-Farmacia\obj\Debug\LP-TP1-Farmacia.pdb
