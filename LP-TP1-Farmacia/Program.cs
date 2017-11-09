@@ -142,15 +142,53 @@ namespace LP_TP1_Farmacia
             this.medicamentos = medicamentos;
             this.dinheiro = dinheiro;
         }
+
+        //Funções
+        public void mostrarMedicamentos()
+        {
+            Console.WriteLine("Lista de medicamentos:\n");
+            foreach(Medicamento medicamento in medicamentos)
+            {
+                Console.WriteLine(medicamento.Nome + " - " + medicamento.Preco + " euros");
+            }
+        }
     }
 
     class Program
     {
         static void Main(string[] args)
         {
+            Funcionario func1 = new Funcionario(1, "Toninho", "Chefe");
+            Funcionario func2 = new Funcionario(1, "Hédinho", "Base");
+            Funcionario func3 = new Funcionario(1, "Carlinhos", "Base");
+            List<Funcionario> funcionarios = new List<Funcionario>();
+            funcionarios.Add(func1);
+            funcionarios.Add(func2);
+            funcionarios.Add(func3);
+
+            List<Receita> receitas = new List<Receita>();
+            Cliente clie1 = new Cliente("Rebeca", 1000, receitas);
+            Cliente clie2 = new Cliente("Quecas", 2000, receitas);
+            Cliente clie3 = new Cliente("Rameira", 500, receitas);
+            List<Cliente> clientes = new List<Cliente>();
+            clientes.Add(clie1);
+            clientes.Add(clie2);
+            clientes.Add(clie3);
+
+            Medicamento medic1 = new Medicamento("Preservativos x12 Durex", 8, 100, false);
+            Medicamento medic2 = new Medicamento("Pílula", 5, 100, true);
+            Medicamento medic3 = new Medicamento("Pílula do dia seguinte", 2, 100, true);
+            List<Medicamento> medicamentos = new List<Medicamento>();
+            medicamentos.Add(medic1);
+            medicamentos.Add(medic2);
+            medicamentos.Add(medic3);
+
+            Farmacia farmacia = new Farmacia(funcionarios, clientes, medicamentos, 100000);
+
             bool acabou = false;
             while (!acabou)
             {
+                Console.Clear();
                 Console.WriteLine("Bem-vindo à Farmácia CORARE");
                 Console.WriteLine("\n----------MENU----------");
                 Console.WriteLine("\nEscolha uma opção:");
@@ -167,10 +205,17 @@ namespace LP_TP1_Farmacia
                 {
                     case "1":
                         {
+                            Console.Clear();
                             //Mostrar todos os medicamentos
+                            farmacia.mostrarMedicamentos();
                             //Verificar se existem as quantidades do medicamento pedido
                             //Pagar medicamentos
-                            Console.Clear();
+
+                            while (Console.KeyAvailable)
+                            {
+                                Console.ReadKey(false);
+                            }
+                            Console.ReadKey();
                             break;
                         }
                     case "2":
@@ -182,8 +227,14 @@ namespace LP_TP1_Farmacia
                         }
                     case "3":
                         {
-                            //Mostrar todos os medicamentos
                             Console.Clear();
+                            //Mostrar todos os medicamentos
+                            farmacia.mostrarMedicamentos();
+                            while (Console.KeyAvailable)
+                            {
+                                Console.ReadKey(false);
+                            }
+                            Console.ReadKey();
                             break;
                         }
                     case "4":
