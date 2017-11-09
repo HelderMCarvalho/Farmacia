@@ -57,9 +57,43 @@ namespace LP_TP1_Farmacia
             this.dinheiro = dinheiro;
             this.receitas = receitas;
         }
+
+        //Funções
+
+        /// <summary>
+        /// Recebe a farmácia e a lista de medicamentos encomendados
+        /// Soma o total a pagar dos medicamentos encomendados
+        /// Se o cliente tiver dinheiro paga, se não tiver aparece a respetiva mensagem
+        /// </summary>
+        /// <param name="farmacia"></param>
+        /// <param name="medicamentos"></param>
+        public void pagar(Farmacia farmacia, List<Medicamento> medicamentos)
+        {
+            float totalPagar = 0;
+            foreach (Medicamento medicamento in medicamentos)
+            {
+                foreach (Medicamento medicamentoFar in farmacia.Medicamentos)
+                {
+                    if (medicamento == medicamentoFar)
+                    {
+                        totalPagar += medicamentoFar.Preco * medicamento.Quantidade;
+                    }
+                }
+            }
+            if (dinheiro <= totalPagar)
+            {
+                dinheiro -= totalPagar;
+                farmacia.Dinheiro += totalPagar;
+            }
+            else
+            {
+                Console.WriteLine("Não tem dinheiro suficiente.");
+            }
+        }
     }
     class Medicamento
     {
+        private int codigo;
         private string nome;
         private float preco;
         private int quantidade;
@@ -70,10 +104,12 @@ namespace LP_TP1_Farmacia
         public float Preco { get => preco; set => preco = value; }
         public int Quantidade { get => quantidade; set => quantidade = value; }
         public bool Tipo { get => tipo; set => tipo = value; }
+        public int Codigo { get => codigo; set => codigo = value; }
 
         //Construtor
-        public Medicamento(string nome, float preco, int quantidade, bool tipo)
+        public Medicamento(int codigo, string nome, float preco, int quantidade, bool tipo)
         {
+            this.codigo = codigo;
             this.nome = nome;
             this.preco = preco;
             this.quantidade = quantidade;
@@ -121,6 +157,11 @@ namespace LP_TP1_Farmacia
         }
     }
 
+    struct Venda
+    {
+
+    }
+
     class Farmacia
     {
         List<Funcionario> funcionarios;
@@ -144,13 +185,111 @@ namespace LP_TP1_Farmacia
         }
 
         //Funções
+
+        /// <summary>
+        /// Lista todos os medicamentos
+        /// </summary>
         public void mostrarMedicamentos()
         {
             Console.WriteLine("Lista de medicamentos:\n");
             foreach(Medicamento medicamento in medicamentos)
             {
-                Console.WriteLine(medicamento.Nome + " - " + medicamento.Preco + " euros");
+                if (medicamento.Quantidade > 0)
+                {
+                    Console.WriteLine(medicamento.Codigo + " - " + medicamento.Nome + " - " + medicamento.Preco + " euros");
+                }
             }
+        }
+
+        /// <summary>
+        /// Recebe o código do medicamento e devolce o objeto Medicamento desse código
+        /// </summary>
+        /// <param name="codigoMedicamento"></param>
+        /// <returns>Devolve um objeto Medicamento</returns>
+        public Medicamento obterMedicamento(int codigoMedicamento)
+        {
+            Medicamento medicamentoFinal = null;
+            foreach (Medicamento medicamento in Medicamentos)
+            {
+                if (codigoMedicamento == medicamento.Codigo)
+                {
+                    medicamentoFinal = medicamento;
+                }
+            }
+            return medicamentoFinal;
+        }
+
+        /// <summary>
+        /// Verifica se um determinado medicamento existe
+        /// </summary>
+        /// <param name="codigoMedicamento"></param>
+        /// <returns>bool onde 1 - Existe e 0 - Não existe</returns>
+        public bool existeMedicamento(int codigoMedicamento)
+        {
+            bool existe = false;
+            foreach (Medicamento medicamento in Medicamentos)
+            {
+                if (codigoMedicamento == medicamento.Codigo)
+                {
+                    existe = true;
+                }
+            }
+            return existe;
+        }
+
+        /// <summary>
+        /// Verifica se um determinado medicamento existe em stock numa determinada quantidade
+        /// </summary>
+        /// <param name="codigoMedicamento"></param>
+        /// <param name="quantidade"></param>
+        /// <returns>bool onde 1 - Existe em stock e 0 - Não existe em stock</returns>
+        public bool existeQuantidade(int codigoMedicamento, int quantidade)
+        {
+            bool existe = false;
+            if (existeMedicamento(codigoMedicamento))
+            {
+                foreach (Medicamento medicamento in Medicamentos)
+                {
+                    if ((quantidade <= medicamento.Quantidade) && (medicamento.Codigo == codigoMedicamento))
+                    {
+                        existe = true;
+                    }
+                }
+            }
+            return existe;
+        }
+
+        /// <summary>
+        /// Retira a quantidade do medicamento especificado
+        /// </summary>
+        /// <param name="codigoMedicamento"></param>
+        /// <param name="quantidade"></param>
+        public void retiraQuantidade(int codigoMedicamento, int quantidade)
+        {
+            if (existeQuantidade(codigoMedicamento, quantidade))
+            {
+                foreach (Medicamento medicamento in Medicamentos)
+                {
+                    if (codigoMedicamento == medicamento.Codigo)
+                    {
+                        medicamento.Quantidade -= quantidade;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Percorre os medicamentos da farmácia e calcula o valor total do stock
+        /// </summary>
+        /// <returns>float com o valor total do stock da farmácia</returns>
+        public float totalMedicamentos()
+        {
+            float totalMedicamento = 0;
+            foreach (Medicamento medicamento in Medicamentos)
+            {
+                totalMedicamento += medicamento.Preco * medicamento.Quantidade;
+            }
+            return totalMedicamento;
         }
     }
 
@@ -175,9 +314,9 @@ namespace LP_TP1_Farmacia
             clientes.Add(clie2);
             clientes.Add(clie3);
 
-            Medicamento medic1 = new Medicamento("Preservativos x12 Durex", 8, 100, false);
-            Medicamento medic2 = new Medicamento("Pílula", 5, 100, true);
-            Medicamento medic3 = new Medicamento("Pílula do dia seguinte", 2, 100, true);
+            Medicamento medic1 = new Medicamento(1, "Preservativos M x12 Durex", 8, 100, false);
+            Medicamento medic2 = new Medicamento(2, "Pílula", 5, 100, true);
+            Medicamento medic3 = new Medicamento(3, "Pílula do dia seguinte", 2, 100, true);
             List<Medicamento> medicamentos = new List<Medicamento>();
             medicamentos.Add(medic1);
             medicamentos.Add(medic2);
@@ -205,11 +344,33 @@ namespace LP_TP1_Farmacia
                 {
                     case "1":
                         {
-                            Console.Clear();
-                            //Mostrar todos os medicamentos
-                            farmacia.mostrarMedicamentos();
-                            //Verificar se existem as quantidades do medicamento pedido
+                            List<Medicamento> encomenda = new List<Medicamento>();
+                            bool acabou1 = false;
+                            while (!acabou1)
+                            {
+                                Console.Clear();
+                                farmacia.mostrarMedicamentos();  //Mostrar todos os medicamentos
+                                Console.Write("\nIntroduza o código do medicamento que quer comprar (0 para finalizar a compra): ");
+                                string codigoMedicamento = Console.ReadLine();
+                                int codigoMedicamentoInt = Int32.Parse(codigoMedicamento);
+                                if (codigoMedicamentoInt != 0)
+                                {
+                                    Console.Write("\nIntroduza a quantidade do medicamento que quer comprar: ");
+                                    string quantidadeMedicamento = Console.ReadLine();
+                                    int quantidadeMedicamentoInt = Int32.Parse(quantidadeMedicamento);
+                                    
+                                    if(farmacia.existeQuantidade(codigoMedicamentoInt, quantidadeMedicamentoInt)) //Verificar se existem as quantidades do medicamento pedido
+                                    {
+                                        encomenda.Add(farmacia.obterMedicamento(codigoMedicamentoInt));
+                                    }
+                                }
+                                else
+                                {
+                                    acabou1 = true;
+                                }
+                            }
                             //Pagar medicamentos
+                            //AQUIIIIIIII POR O PAGAR QUE O CARLOS FEZ
 
                             while (Console.KeyAvailable)
                             {
@@ -228,8 +389,7 @@ namespace LP_TP1_Farmacia
                     case "3":
                         {
                             Console.Clear();
-                            //Mostrar todos os medicamentos
-                            farmacia.mostrarMedicamentos();
+                            farmacia.mostrarMedicamentos();  //Mostrar todos os medicamentos
                             while (Console.KeyAvailable)
                             {
                                 Console.ReadKey(false);
@@ -239,17 +399,28 @@ namespace LP_TP1_Farmacia
                         }
                     case "4":
                         {
-                            //Pedir código de venda
-                            //Mostrar os medicamentos comprados e selecionar o que pretende devolver
                             Console.Clear();
+                            Console.Write("Introduza o código da sua venda: ");  //Pedir código de venda
+                            string codVenda = Console.ReadLine();
+                            //Mostrar os medicamentos comprados e selecionar o que pretende devolver
+                            while (Console.KeyAvailable)
+                            {
+                                Console.ReadKey(false);
+                            }
+                            Console.ReadKey();
                             break;
                         }
                     case "5":
                         {
-                            //Pedir password de admin
-                            //Mostrar valor total em medicamentos
-                            //Mostrar por tipo
                             Console.Clear();
+                            //Pedir password de admin
+                            Console.WriteLine("A farmácia tem " + farmacia.totalMedicamentos() + " euros em stock de medicamentos.");  //Mostrar valor total em medicamentos
+                            //Mostrar por tipo
+                            while (Console.KeyAvailable)
+                            {
+                                Console.ReadKey(false);
+                            }
+                            Console.ReadKey();
                             break;
                         }
                     case "6":
