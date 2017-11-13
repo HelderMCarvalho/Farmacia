@@ -65,20 +65,23 @@ namespace LP_TP1_Farmacia
 
         /// <summary>
         /// Recebe a farmácia e a lista de medicamentos encomendados
-        /// Soma o total a pagar dos medicamentos encomendados
+        /// Soma o total a pagar dos medicamentos encomendados</summary>
         /// Se o cliente tiver dinheiro paga, se não tiver aparece a respetiva mensagem
-        /// </summary>
         /// <param name="farmacia"></param>
-        /// <param name="medicamentos"></param>
-        public void pagar(Farmacia farmacia, List<Medicamento> medicamentos)
+        /// <param name="encomenda"></param>
+        public void pagar(Farmacia farmacia, List<Medicamento> encomenda)
         {
             float totalPagar = 0;
-            foreach (Medicamento medicamento in medicamentos)
+            foreach (Medicamento medicamento in encomenda)
             {
                 totalPagar += (medicamento.Preco * medicamento.Quantidade);
             }
             if (dinheiro >= totalPagar)
             {
+                foreach (Medicamento medicamento in encomenda)
+                {
+                    farmacia.retiraDoStock(medicamento.Codigo, medicamento.Quantidade);
+                }
                 dinheiro -= totalPagar;
                 farmacia.Dinheiro += totalPagar;
                 Console.WriteLine("\nCompra efetuada com sucesso.");
@@ -189,6 +192,7 @@ namespace LP_TP1_Farmacia
         /// </summary>
         public void mostrarMedicamentos()
         {
+            Console.Clear();
             Console.WriteLine("Lista de medicamentos:\n");
             foreach(Medicamento medicamento in medicamentos)
             {
@@ -218,7 +222,7 @@ namespace LP_TP1_Farmacia
         /// </summary>
         /// <param name="codigoMedicamento"></param>
         /// <returns>Devolve um objeto Medicamento</returns>
-        public Medicamento obterMedicamento(int codigoMedicamento, int quantidade = -1)
+        public Medicamento obterMedicamento(int codigoMedicamento)
         {
             Medicamento medicamentoFinal = null;
             foreach (Medicamento medicamento in Medicamentos)
@@ -227,10 +231,6 @@ namespace LP_TP1_Farmacia
                 {
                     medicamentoFinal = medicamento;
                 }
-            }
-            if (quantidade != -1)
-            {
-                medicamentoFinal.Quantidade = quantidade;
             }
             return medicamentoFinal;
         }
@@ -342,6 +342,25 @@ namespace LP_TP1_Farmacia
                 }
             }
             return funcionarioAtual;
+        }
+
+        /// <summary>
+        /// Retira do stock uma certa quantidade de produtos
+        /// </summary>
+        /// <param name="codigoMedicamento"></param>
+        /// <param name="quantidade"></param>
+        public void retiraDoStock(int codigoMedicamento, int quantidade)
+        {
+            if (existeQuantidade(codigoMedicamento, quantidade))
+            {
+                foreach (Medicamento medicamento in Medicamentos)
+                {
+                    if (codigoMedicamento == medicamento.Codigo)
+                    {
+                        medicamento.Quantidade -= quantidade;
+                    }
+                }
+            }
         }
     }
 
@@ -475,7 +494,24 @@ namespace LP_TP1_Farmacia
                                         int quantidadeMedicamentoInt = Int32.Parse(quantidadeMedicamento);
                                         if (farmacia.existeQuantidade(codigoMedicamentoInt, quantidadeMedicamentoInt)) //Verificar se existem as quantidades do medicamento pedido
                                         {
-                                            encomenda.Add(farmacia.obterMedicamento(codigoMedicamentoInt, quantidadeMedicamentoInt));
+                                            Medicamento medi = farmacia.obterMedicamento(codigoMedicamentoInt);
+                                            Medicamento mediTemp = new Medicamento(medi.Codigo, medi.Nome, medi.Preco, quantidadeMedicamentoInt, medi.Tipo);
+                                            encomenda.Add(mediTemp);
+                                            Console.WriteLine("\nMedicamento adicionado com sucesso.");
+                                            while (Console.KeyAvailable)
+                                            {
+                                                Console.ReadKey(false);
+                                            }
+                                            Console.ReadKey();
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("\nNão existe quantidade suficiente.");
+                                            while (Console.KeyAvailable)
+                                            {
+                                                Console.ReadKey(false);
+                                            }
+                                            Console.ReadKey();
                                         }
                                     }
                                     else
