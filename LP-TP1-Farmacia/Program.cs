@@ -84,7 +84,11 @@ namespace LP_TP1_Farmacia
                 }
                 dinheiro -= totalPagar;
                 farmacia.Dinheiro += totalPagar;
+                farmacia.ContadorVentas++;
+                Venda venda = new Venda(farmacia.ContadorVentas, codigo, encomenda, totalPagar);
+                farmacia.Vendas.Add(venda);
                 Console.WriteLine("\nCompra efetuada com sucesso.");
+                Console.WriteLine("O seu código de venda é: " + farmacia.ContadorVentas);
             }
             else
             {
@@ -120,9 +124,9 @@ namespace LP_TP1_Farmacia
 
     class Receita
     {
-        int codigo;
-        List<Medicamento> medicamentos;
-        bool entregue;
+        private int codigo;
+        private List<Medicamento> medicamentos;
+        private bool entregue;
 
         //Gets e Sets
         public int Codigo { get => codigo; set => codigo = value; }
@@ -160,30 +164,54 @@ namespace LP_TP1_Farmacia
 
     struct Venda
     {
+        private int codigo;
+        private int codigoCliente;
+        private List<Medicamento> medicamentos;
+        private float totalPago;
 
+        //Construtor
+        public Venda(int codigo, int codigoCliente, List<Medicamento> medicamentos, float totalPago)
+        {
+            this.codigo = codigo;
+            this.codigoCliente = codigoCliente;
+            this.medicamentos = medicamentos;
+            this.totalPago = totalPago;
+        }
+
+        //Gets e Sets
+        public int Codigo { get => codigo; set => codigo = value; }
+        public int CodigoCliente { get => codigoCliente; set => codigoCliente = value; }
+        public List<Medicamento> Medicamentos { get => medicamentos; set => medicamentos = value; }
+        public float TotalPago { get => totalPago; set => totalPago = value; }
     }
 
     class Farmacia
     {
-        List<Funcionario> funcionarios;
-        List<Cliente> clientes;
-        List<Medicamento> medicamentos;
-        float dinheiro;
+        private List<Funcionario> funcionarios;
+        private List<Cliente> clientes;
+        private List<Medicamento> medicamentos;
+        private int contadorVentas;
+        private List<Venda> vendas;
+        private float dinheiro;
+
+        //Construtor
+        public Farmacia(List<Funcionario> funcionarios, List<Cliente> clientes, List<Medicamento> medicamentos, int contadorVentas, List<Venda> vendas, float dinheiro)
+        {
+            this.funcionarios = funcionarios;
+            this.clientes = clientes;
+            this.medicamentos = medicamentos;
+            this.contadorVentas = contadorVentas;
+            this.vendas = vendas;
+            this.dinheiro = dinheiro;
+        }
         
         //GETS E SETS
         public List<Funcionario> Funcionarios { get => funcionarios; set => funcionarios = value; }
         public List<Cliente> Clientes { get => clientes; set => clientes = value; }
         public List<Medicamento> Medicamentos { get => medicamentos; set => medicamentos = value; }
         public float Dinheiro { get => dinheiro; set => dinheiro = value; }
-
-        //Construtor
-        public Farmacia(List<Funcionario> funcionarios, List<Cliente> clientes, List<Medicamento> medicamentos, float dinheiro)
-        {
-            this.funcionarios = funcionarios;
-            this.clientes = clientes;
-            this.medicamentos = medicamentos;
-            this.dinheiro = dinheiro;
-        }
+        public List<Venda> Vendas { get => vendas; set => vendas = value; }
+        public int ContadorVentas { get => contadorVentas; set => contadorVentas = value; }
 
         //Funções
 
@@ -208,10 +236,11 @@ namespace LP_TP1_Farmacia
         /// </summary>
         public void mostrarMedicamentosTodos()
         {
+            Console.Clear();
             Console.WriteLine("Lista de medicamentos:\n");
             foreach (Medicamento medicamento in medicamentos)
             {
-                Console.WriteLine(medicamento.Codigo + " - " + medicamento.Nome + " - " + medicamento.Preco + " euros");
+                Console.WriteLine(medicamento.Codigo + " - " + medicamento.Nome + " - " + medicamento.Preco + " euros - " + medicamento.Quantidade);
             }
         }
 
@@ -362,6 +391,70 @@ namespace LP_TP1_Farmacia
                 }
             }
         }
+
+        /// <summary>
+        /// Recebe um Objeto Medicamento e adiciona a "quantidadeAdicionar" à atual quantidade
+        /// </summary>
+        /// <param name="medicamento"></param>
+        /// <param name="quantidadeAdicionar"></param>
+        public void reporStock(Medicamento medicamento, int quantidadeAdicionar)
+        {
+            medicamento.Quantidade += quantidadeAdicionar;
+        }
+
+        /// <summary>
+        /// Verifica se um Código de Venda está associado a uma Venda
+        /// </summary>
+        /// <param name="codigoVenda"></param>
+        /// <returns>Bool: False é não existe e True é existe</returns>
+        public bool existeVenda(int codigoVenda)
+        {
+            bool existe = false;
+            foreach(Venda venda in vendas)
+            {
+                if (venda.Codigo == codigoVenda)
+                {
+                    existe = true;
+                }
+            }
+            return existe;
+        }
+
+        /// <summary>
+        /// Devolve um Objeto Venda a partir de um código de venda recebido
+        /// </summary>
+        /// <param name="codigoVenda"></param>
+        /// <returns>Objeto venda</returns>
+        public Venda obterVenda(int codigoVenda)
+        {
+            Venda vendaFinal = new Venda();
+            foreach (Venda venda in vendas)
+            {
+                if (venda.Codigo == codigoVenda)
+                {
+                    vendaFinal = venda;
+                }
+            }
+            return vendaFinal;
+        }
+
+        /// <summary>
+        /// Lista os medicamentos guardados numa venda
+        /// </summary>
+        /// <param name="codigoVenda"></param>
+        public void mostrarMedicamentosDaVenda(int codigoVenda)
+        {
+            Venda venda = obterVenda(codigoVenda);
+            if (existeVenda(codigoVenda))
+            {
+                Console.Clear();
+                Console.WriteLine("Lista de medicamentos:\n");
+                foreach (Medicamento medicamento in venda.Medicamentos)
+                {
+                    Console.WriteLine(medicamento.Codigo + " - " + medicamento.Nome + " - " + medicamento.Preco + " euros - " + medicamento.Quantidade);
+                }
+            }
+        }
     }
 
     class Program
@@ -393,7 +486,9 @@ namespace LP_TP1_Farmacia
             medicamentos.Add(medic2);
             medicamentos.Add(medic3);
 
-            Farmacia farmacia = new Farmacia(funcionarios, clientes, medicamentos, 100000);
+            List<Venda> vendas = new List<Venda>();
+
+            Farmacia farmacia = new Farmacia(funcionarios, clientes, medicamentos, 0, vendas, 100000);
 
             Cliente clienteAtual = null;
             Funcionario funcionarioAtual = null;
@@ -569,7 +664,11 @@ namespace LP_TP1_Farmacia
                             {
                                 Console.Write("Introduza o código da sua venda: ");  //Pedir código de venda
                                 string codVenda = Console.ReadLine();
+                                int codVendaInt = Int32.Parse(codVenda);
+                                farmacia.mostrarMedicamentosDaVenda(codVendaInt);
                                 //Mostrar os medicamentos comprados e selecionar o que pretende devolver
+
+                                //FAZER FUNÇÃO PARA DEVOLVER
                             }
                             while (Console.KeyAvailable)
                             {
@@ -606,14 +705,32 @@ namespace LP_TP1_Farmacia
                             }
                             else
                             {
-                                farmacia.mostrarMedicamentosTodos();  //Mostrar a lista de medicamentos
-                                //Introduzir o código do medicamento e a quantidade a adicionar ao stock
+                                bool acabou1 = false;
+                                while (!acabou1)
+                                {
+                                    farmacia.mostrarMedicamentosTodos();  //Mostrar a lista de medicamentos
+                                    Console.Write("\nIntroduza o código do medicamento que quer repor (0 para finalizar a reposição): ");
+                                    string codigoMedicamento = Console.ReadLine();
+                                    int codigoMedicamentoInt = Int32.Parse(codigoMedicamento);
+                                    if (codigoMedicamentoInt != 0)
+                                    {
+                                        Console.Write("\nIntroduza a quantidade a adicionar: ");
+                                        string quantidade = Console.ReadLine();
+                                        int quantidadeInt = Int32.Parse(quantidade);
+                                        farmacia.reporStock(farmacia.obterMedicamento(codigoMedicamentoInt), quantidadeInt);
+                                        Console.WriteLine("\nMedicamento adicionado com sucesso ao stock.");
+                                        while (Console.KeyAvailable)
+                                        {
+                                            Console.ReadKey(false);
+                                        }
+                                        Console.ReadKey();
+                                    }
+                                    else
+                                    {
+                                        acabou1 = true;
+                                    }
+                                }
                             }
-                            while (Console.KeyAvailable)
-                            {
-                                Console.ReadKey(false);
-                            }
-                            Console.ReadKey();
                             break;
                         }
                     case "0":
