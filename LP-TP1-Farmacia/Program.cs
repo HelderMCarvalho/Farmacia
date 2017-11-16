@@ -95,6 +95,54 @@ namespace LP_TP1_Farmacia
                 Console.WriteLine("\nCompra não efetuada com sucesso. Não tem dinheiro suficiente.");
             }
         }
+
+        /// <summary>
+        /// Recebe a Farmácia e a lista de medicamentos a ser devolvidos
+        /// Soma o total a devolver dos medicamentos a ser devolvidos
+        /// Repõem os medicamentos devolvido no stock da farmácia
+        /// </summary>
+        /// <param name="farmacia"></param>
+        /// <param name="devolucao"></param>
+        public void devolver(Farmacia farmacia, List<Medicamento> devolucao, int codigoVenda)
+        {
+            Venda venda = farmacia.obterVenda(codigoVenda);
+            float totalReceber = 0;
+            foreach (Medicamento medicamento in devolucao)
+            {
+                totalReceber += (medicamento.Preco * medicamento.Quantidade);
+                foreach(Medicamento medicamentoVenda in venda.Medicamentos)
+                {
+                    if (medicamento.Codigo == medicamentoVenda.Codigo)
+                    {
+                        medicamentoVenda.Quantidade -= medicamento.Quantidade;
+                        break;
+                    }
+                }
+                farmacia.reporStock(farmacia.obterMedicamento(medicamento.Codigo), medicamento.Quantidade);
+            }
+            dinheiro += totalReceber;
+            farmacia.Dinheiro -= totalReceber;
+            Console.WriteLine("\nDevolução efetuada com sucesso!");
+        }
+
+        /// <summary>
+        /// Verifica se uma receita existe
+        /// </summary>
+        /// <param name="codReceita"></param>
+        /// <returns>bool onde 1 - Existe e 0 - Não existe</returns>
+        public bool existeReceita(int codReceita)
+        {
+            bool existe = false;
+            foreach(Receita receita in receitas)
+            {
+                if (receita.Codigo == codReceita)
+                {
+                    existe = true;
+                    break;
+                }
+            }
+            return existe;
+        }
     }
     class Medicamento
     {
@@ -246,8 +294,6 @@ namespace LP_TP1_Farmacia
 
         /// <summary>
         /// Recebe o código do medicamento e devolve o objeto Medicamento desse código
-        /// Se for introduzida quantidade como parâmetro, o Objeto Medicamento devolvido vai ter essa quantidade
-        /// Se não for introduzida quantidade como parâmetro, o Objeto Medicamento devolvido vai ter a quantidade em stock
         /// </summary>
         /// <param name="codigoMedicamento"></param>
         /// <returns>Devolve um objeto Medicamento</returns>
@@ -259,6 +305,7 @@ namespace LP_TP1_Farmacia
                 if (codigoMedicamento == medicamento.Codigo)
                 {
                     medicamentoFinal = medicamento;
+                    break;
                 }
             }
             return medicamentoFinal;
@@ -277,6 +324,26 @@ namespace LP_TP1_Farmacia
                 if (codigoMedicamento == medicamento.Codigo)
                 {
                     existe = true;
+                    break;
+                }
+            }
+            return existe;
+        }
+
+        /// <summary>
+        /// Verifica se uma determinada venda existe
+        /// </summary>
+        /// <param name="codigoVenda"></param>
+        /// <returns>bool onde 1 - Existe e 0 - Não existe</returns>
+        public bool existeVenda(int codigoVenda)
+        {
+            bool existe = false;
+            foreach (Venda venda in vendas)
+            {
+                if (codigoVenda == venda.Codigo)
+                {
+                    existe = true;
+                    break;
                 }
             }
             return existe;
@@ -298,6 +365,32 @@ namespace LP_TP1_Farmacia
                     if ((quantidade <= medicamento.Quantidade) && (medicamento.Codigo == codigoMedicamento))
                     {
                         existe = true;
+                        break;
+                    }
+                }
+            }
+            return existe;
+        }
+
+        /// <summary>
+        /// Recebe o Código da venda, do medicamento e a quantidade para ver se é possivel devolver essa quantidade desse medicamento nessa venda
+        /// </summary>
+        /// <param name="codigoVenda"></param>
+        /// <param name="codigoMedicamento"></param>
+        /// <param name="quantidade"></param>
+        /// <returns>bool onde 1 - Existe a quantidade na venda e 0 - Não existe a quantidade na venda</returns>
+        public bool existeQuantidadeNaVenda(int codigoVenda, int codigoMedicamento, int quantidade)
+        {
+            bool existe = false;
+            if (existeVenda(codigoVenda))
+            {
+                Venda venda = obterVenda(codigoVenda);
+                foreach (Medicamento medicamento in venda.Medicamentos)
+                {
+                    if ((quantidade <= medicamento.Quantidade) && (medicamento.Codigo == codigoMedicamento))
+                    {
+                        existe = true;
+                        break;
                     }
                 }
             }
@@ -318,6 +411,7 @@ namespace LP_TP1_Farmacia
                     if (codigoMedicamento == medicamento.Codigo)
                     {
                         medicamento.Quantidade -= quantidade;
+                        break;
                     }
                 }
             }
@@ -332,7 +426,7 @@ namespace LP_TP1_Farmacia
             float totalMedicamento = 0;
             foreach (Medicamento medicamento in Medicamentos)
             {
-                totalMedicamento += medicamento.Preco * medicamento.Quantidade;
+                totalMedicamento += (medicamento.Preco * medicamento.Quantidade);
             }
             return totalMedicamento;
         }
@@ -350,6 +444,7 @@ namespace LP_TP1_Farmacia
                 if(codigoCliente == cliente.Codigo)
                 {
                     clienteAtual = cliente;
+                    break;
                 }
             }
             return clienteAtual;
@@ -368,6 +463,7 @@ namespace LP_TP1_Farmacia
                 if (codigoFuncionario == funcionario.Id)
                 {
                     funcionarioAtual = funcionario;
+                    break;
                 }
             }
             return funcionarioAtual;
@@ -387,6 +483,7 @@ namespace LP_TP1_Farmacia
                     if (codigoMedicamento == medicamento.Codigo)
                     {
                         medicamento.Quantidade -= quantidade;
+                        break;
                     }
                 }
             }
@@ -403,24 +500,6 @@ namespace LP_TP1_Farmacia
         }
 
         /// <summary>
-        /// Verifica se um Código de Venda está associado a uma Venda
-        /// </summary>
-        /// <param name="codigoVenda"></param>
-        /// <returns>Bool: False é não existe e True é existe</returns>
-        public bool existeVenda(int codigoVenda)
-        {
-            bool existe = false;
-            foreach(Venda venda in vendas)
-            {
-                if (venda.Codigo == codigoVenda)
-                {
-                    existe = true;
-                }
-            }
-            return existe;
-        }
-
-        /// <summary>
         /// Devolve um Objeto Venda a partir de um código de venda recebido
         /// </summary>
         /// <param name="codigoVenda"></param>
@@ -433,6 +512,7 @@ namespace LP_TP1_Farmacia
                 if (venda.Codigo == codigoVenda)
                 {
                     vendaFinal = venda;
+                    break;
                 }
             }
             return vendaFinal;
@@ -469,15 +549,6 @@ namespace LP_TP1_Farmacia
             funcionarios.Add(func2);
             funcionarios.Add(func3);
 
-            List<Receita> receitas = new List<Receita>();
-            Cliente clie1 = new Cliente(1, "Rebeca", 1000, receitas);
-            Cliente clie2 = new Cliente(2, "Quecas", 2000, receitas);
-            Cliente clie3 = new Cliente(3, "Rameira", 500, receitas);
-            List<Cliente> clientes = new List<Cliente>();
-            clientes.Add(clie1);
-            clientes.Add(clie2);
-            clientes.Add(clie3);
-
             Medicamento medic1 = new Medicamento(1, "Preservativos M x12 Durex", 8, 100, false);
             Medicamento medic2 = new Medicamento(2, "Pílula", 5, 100, true);
             Medicamento medic3 = new Medicamento(3, "Pílula do dia seguinte", 2, 100, true);
@@ -485,6 +556,24 @@ namespace LP_TP1_Farmacia
             medicamentos.Add(medic1);
             medicamentos.Add(medic2);
             medicamentos.Add(medic3);
+
+            Medicamento medic1ParaReceita = medic1;
+            medic1ParaReceita.Quantidade = 10;
+            Medicamento medic2ParaReceita = medic2;
+            medic2ParaReceita.Quantidade = 5;
+            List<Medicamento> medicamentosParaReceita = new List<Medicamento>();
+            medicamentosParaReceita.Add(medic1ParaReceita);
+            medicamentosParaReceita.Add(medic2ParaReceita);
+            Receita receita1 = new Receita(1, medicamentosParaReceita, false);
+            List<Receita> receitas = new List<Receita>();
+            receitas.Add(receita1);
+            Cliente clie1 = new Cliente(1, "Rebeca", 1000, receitas);
+            Cliente clie2 = new Cliente(2, "Quecas", 2000, receitas);
+            Cliente clie3 = new Cliente(3, "Rameira", 500, receitas);
+            List<Cliente> clientes = new List<Cliente>();
+            clientes.Add(clie1);
+            clientes.Add(clie2);
+            clientes.Add(clie3);
 
             List<Venda> vendas = new List<Venda>();
 
@@ -632,6 +721,28 @@ namespace LP_TP1_Farmacia
                             }
                             else
                             {
+                                bool acabou1 = false;
+                                while (!acabou1)
+                                {
+                                    Console.Clear();
+                                    Console.Write("\nIntroduza o código da receita: ");
+                                    string codigoReceita = Console.ReadLine();
+                                    int codigoReceitaInt = Int32.Parse(codigoReceita);
+                                    if (clienteAtual.existeReceita(codigoReceitaInt))
+                                    {
+                                        //CONTINUAR AQUI
+                                        //utilizar uma função de pagamento onde entre a farmácia e a receita como parametro
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("\nEssa receita não existe.");
+                                        while (Console.KeyAvailable)
+                                        {
+                                            Console.ReadKey(false);
+                                        }
+                                        Console.ReadKey();
+                                    }
+                                }
                                 //Verificar se existem as quantidades dos medicamentos pedidos na receita
                                 //Pagar medicamentos
                             }
@@ -662,13 +773,67 @@ namespace LP_TP1_Farmacia
                             }
                             else
                             {
-                                Console.Write("Introduza o código da sua venda: ");  //Pedir código de venda
-                                string codVenda = Console.ReadLine();
-                                int codVendaInt = Int32.Parse(codVenda);
-                                farmacia.mostrarMedicamentosDaVenda(codVendaInt);
-                                //Mostrar os medicamentos comprados e selecionar o que pretende devolver
-
-                                //FAZER FUNÇÃO PARA DEVOLVER
+                                bool acabou1 = false;
+                                while (!acabou1)
+                                {
+                                    Console.Clear();
+                                    Console.Write("Introduza o código da sua venda: ");  //Pedir código de venda
+                                    string codVenda = Console.ReadLine();
+                                    int codVendaInt = Int32.Parse(codVenda);
+                                    if (farmacia.existeVenda(codVendaInt))
+                                    {
+                                        List<Medicamento> devolucao = new List<Medicamento>();
+                                        while (!acabou1)
+                                        {
+                                            farmacia.mostrarMedicamentosDaVenda(codVendaInt);
+                                            Console.Write("\nIntroduza o código do medicamento que quer devolver (0 para finalizar a devolução): ");
+                                            string codigoMedicamento = Console.ReadLine();
+                                            int codigoMedicamentoInt = Int32.Parse(codigoMedicamento);
+                                            if (codigoMedicamentoInt != 0)
+                                            {
+                                                Console.Write("Introduza a quantidade do medicamento que quer devolver: ");
+                                                string quantidadeMedicamento = Console.ReadLine();
+                                                int quantidadeMedicamentoInt = Int32.Parse(quantidadeMedicamento);
+                                                if (farmacia.existeQuantidadeNaVenda(codVendaInt, codigoMedicamentoInt, quantidadeMedicamentoInt)) //Verificar se existem as quantidades do medicamento pedido na venda
+                                                {
+                                                    Medicamento medi = farmacia.obterMedicamento(codigoMedicamentoInt);
+                                                    Medicamento mediTemp = new Medicamento(medi.Codigo, medi.Nome, medi.Preco, quantidadeMedicamentoInt, medi.Tipo);
+                                                    devolucao.Add(mediTemp);
+                                                    Console.WriteLine("\nMedicamento adicionado com sucesso para devolução.");
+                                                    while (Console.KeyAvailable)
+                                                    {
+                                                        Console.ReadKey(false);
+                                                    }
+                                                    Console.ReadKey();
+                                                }
+                                                else
+                                                {
+                                                    Console.WriteLine("\nNão é possível devolver essa quantidade.");
+                                                    while (Console.KeyAvailable)
+                                                    {
+                                                        Console.ReadKey(false);
+                                                    }
+                                                    Console.ReadKey();
+                                                    Console.Clear();
+                                                }
+                                            }
+                                            else
+                                            {
+                                                acabou1 = true;
+                                            }
+                                        }
+                                        clienteAtual.devolver(farmacia, devolucao, codVendaInt);  //Devolver Medicamentos
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("\nEssa venda não existe.");
+                                        while (Console.KeyAvailable)
+                                        {
+                                            Console.ReadKey(false);
+                                        }
+                                        Console.ReadKey();
+                                    }
+                                }
                             }
                             while (Console.KeyAvailable)
                             {
