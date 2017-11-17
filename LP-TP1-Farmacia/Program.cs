@@ -97,6 +97,63 @@ namespace LP_TP1_Farmacia
         }
 
         /// <summary>
+        /// Recebe a farmácia e a lista de medicamentos encomendados por receita
+        /// Soma o total a pagar dos medicamentos encomendados por receita (se o "tipo" for "true" o medicamento dem desconto de 50%)
+        /// Se o cliente tiver dinheiro paga, se não tiver aparece a respetiva mensagem
+        /// </summary>
+        /// <param name="farmacia"></param>
+        /// <param name="medicamentosReceita"></param>
+        public void pagarComReceita(Farmacia farmacia, List<Medicamento> medicamentosReceita)
+        {
+            float totalPagar = 0;
+            bool existeTudo = true;
+            foreach(Medicamento medicamento in medicamentosReceita)
+            {
+                if (farmacia.existeQuantidade(medicamento.Codigo, medicamento.Quantidade) == false)
+                {
+                    existeTudo = false;
+                    break;
+                }
+            }
+            if (existeTudo)
+            {
+                foreach (Medicamento medicamento in medicamentosReceita)
+                {
+                    if (medicamento.Tipo)
+                    {
+                        totalPagar += ((medicamento.Preco - (medicamento.Preco * 0.5f)) * medicamento.Quantidade);
+                    }
+                    else
+                    {
+                        totalPagar += (medicamento.Preco * medicamento.Quantidade);
+                    }
+                }
+                if (dinheiro >= totalPagar)
+                {
+                    foreach (Medicamento medicamento in medicamentosReceita)
+                    {
+                        farmacia.retiraDoStock(medicamento.Codigo, medicamento.Quantidade);
+                    }
+                    dinheiro -= totalPagar;
+                    farmacia.Dinheiro += totalPagar;
+                    farmacia.ContadorVentas++;
+                    Venda venda = new Venda(farmacia.ContadorVentas, codigo, medicamentosReceita, totalPagar);
+                    farmacia.Vendas.Add(venda);
+                    Console.WriteLine("\nEntregou a receita com sucesso!");
+                    Console.WriteLine("O seu código de venda é: " + farmacia.ContadorVentas);
+                }
+                else
+                {
+                    Console.WriteLine("\nCompra não efetuada com sucesso. Não tem dinheiro suficiente.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\nCompra não efetuada com sucesso. Não existe stock suficiente.");
+            }
+        }
+
+        /// <summary>
         /// Recebe a Farmácia e a lista de medicamentos a ser devolvidos
         /// Soma o total a devolver dos medicamentos a ser devolvidos
         /// Repõem os medicamentos devolvido no stock da farmácia
@@ -142,6 +199,25 @@ namespace LP_TP1_Farmacia
                 }
             }
             return existe;
+        }
+
+        /// <summary>
+        /// Recebe o código da receita e devolve o objeto Receita desse código
+        /// </summary>
+        /// <param name="codigoReceita"></param>
+        /// <returns>Objeto Receita</returns>
+        public Receita obterReceita(int codigoReceita)
+        {
+            Receita receitaAtual = null;
+            foreach(Receita receita in receitas)
+            {
+                if (receita.Codigo == codigoReceita)
+                {
+                    receitaAtual = receita;
+                    break;
+                }
+            }
+            return receitaAtual;
         }
     }
     class Medicamento
@@ -432,6 +508,40 @@ namespace LP_TP1_Farmacia
         }
 
         /// <summary>
+        /// Percorre os medicamentos da farmácia e calcula o valor total do stock de medicamentos comparticipáveis
+        /// </summary>
+        /// <returns>float com o valor total do stock de medicamentos comparticipáveis da farmácia</returns>
+        public float totalMedicamentosComparticipaveis()
+        {
+            float totalMedicamento = 0;
+            foreach (Medicamento medicamento in Medicamentos)
+            {
+                if (medicamento.Tipo)
+                {
+                    totalMedicamento += (medicamento.Preco * medicamento.Quantidade);
+                }
+            }
+            return totalMedicamento;
+        }
+
+        /// <summary>
+        /// Percorre os medicamentos da farmácia e calcula o valor total do stock de medicamentos não comparticipáveis
+        /// </summary>
+        /// <returns>float com o valor total do stock de medicamentos não comparticipáveis da farmácia</returns>
+        public float totalMedicamentosNãoComparticipaveis()
+        {
+            float totalMedicamento = 0;
+            foreach (Medicamento medicamento in Medicamentos)
+            {
+                if (medicamento.Tipo == false)
+                {
+                    totalMedicamento += (medicamento.Preco * medicamento.Quantidade);
+                }
+            }
+            return totalMedicamento;
+        }
+
+        /// <summary>
         /// Recebe o código do cliente e devolve um Objeto Cliente desse código ou devolve um Objeto Cliente = null caso não exista
         /// </summary>
         /// <param name="codigoCliente"></param>
@@ -557,10 +667,8 @@ namespace LP_TP1_Farmacia
             medicamentos.Add(medic2);
             medicamentos.Add(medic3);
 
-            Medicamento medic1ParaReceita = medic1;
-            medic1ParaReceita.Quantidade = 10;
-            Medicamento medic2ParaReceita = medic2;
-            medic2ParaReceita.Quantidade = 5;
+            Medicamento medic1ParaReceita = new Medicamento(1, "Preservativos M x12 Durex", 8, 10, false);
+            Medicamento medic2ParaReceita = new Medicamento(2, "Pílula", 5, 5, true);
             List<Medicamento> medicamentosParaReceita = new List<Medicamento>();
             medicamentosParaReceita.Add(medic1ParaReceita);
             medicamentosParaReceita.Add(medic2ParaReceita);
@@ -673,7 +781,7 @@ namespace LP_TP1_Farmacia
                                     int codigoMedicamentoInt = Int32.Parse(codigoMedicamento);
                                     if (codigoMedicamentoInt != 0)
                                     {
-                                        Console.Write("\nIntroduza a quantidade do medicamento que quer comprar: ");
+                                        Console.Write("Introduza a quantidade do medicamento que quer comprar: ");
                                         string quantidadeMedicamento = Console.ReadLine();
                                         int quantidadeMedicamentoInt = Int32.Parse(quantidadeMedicamento);
                                         if (farmacia.existeQuantidade(codigoMedicamentoInt, quantidadeMedicamentoInt)) //Verificar se existem as quantidades do medicamento pedido
@@ -725,13 +833,14 @@ namespace LP_TP1_Farmacia
                                 while (!acabou1)
                                 {
                                     Console.Clear();
-                                    Console.Write("\nIntroduza o código da receita: ");
+                                    Console.Write("Introduza o código da receita: ");
                                     string codigoReceita = Console.ReadLine();
                                     int codigoReceitaInt = Int32.Parse(codigoReceita);
                                     if (clienteAtual.existeReceita(codigoReceitaInt))
                                     {
-                                        //CONTINUAR AQUI
-                                        //utilizar uma função de pagamento onde entre a farmácia e a receita como parametro
+                                        Receita receita = clienteAtual.obterReceita(codigoReceitaInt);
+                                        clienteAtual.pagarComReceita(farmacia, receita.Medicamentos);
+                                        acabou1 = true;
                                     }
                                     else
                                     {
@@ -743,8 +852,6 @@ namespace LP_TP1_Farmacia
                                         Console.ReadKey();
                                     }
                                 }
-                                //Verificar se existem as quantidades dos medicamentos pedidos na receita
-                                //Pagar medicamentos
                             }
                             while (Console.KeyAvailable)
                             {
@@ -852,7 +959,8 @@ namespace LP_TP1_Farmacia
                             else
                             {
                                 Console.WriteLine("A farmácia tem " + farmacia.totalMedicamentos() + " euros em stock de medicamentos.");  //Mostrar valor total em medicamentos
-                                //Mostrar por tipo
+                                Console.WriteLine("A farmácia tem " + farmacia.totalMedicamentosComparticipaveis() + " euros em stock de medicamentos comparticipáveis.");  //Mostrar por tipo comparticipável (true)
+                                Console.WriteLine("A farmácia tem " + farmacia.totalMedicamentosNãoComparticipaveis() + " euros em stock de medicamentos não comparticipáveis.");  //Mostrar por tipo não comparticipável (false)
                             }
                             while (Console.KeyAvailable)
                             {
