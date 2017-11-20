@@ -85,7 +85,7 @@ namespace LP_TP1_Farmacia
                 dinheiro -= totalPagar;
                 farmacia.Dinheiro += totalPagar;
                 farmacia.ContadorVentas++;
-                Venda venda = new Venda(farmacia.ContadorVentas, codigo, encomenda, totalPagar);
+                Venda venda = new Venda(farmacia.ContadorVentas, codigo, encomenda, totalPagar, false);
                 farmacia.Vendas.Add(venda);
                 Console.WriteLine("\nCompra efetuada com sucesso.");
                 Console.WriteLine("O seu código de venda é: " + farmacia.ContadorVentas);
@@ -137,7 +137,7 @@ namespace LP_TP1_Farmacia
                     dinheiro -= totalPagar;
                     farmacia.Dinheiro += totalPagar;
                     farmacia.ContadorVentas++;
-                    Venda venda = new Venda(farmacia.ContadorVentas, codigo, medicamentosReceita, totalPagar);
+                    Venda venda = new Venda(farmacia.ContadorVentas, codigo, medicamentosReceita, totalPagar, true);
                     farmacia.Vendas.Add(venda);
                     Console.WriteLine("\nEntregou a receita com sucesso!");
                     Console.WriteLine("O seu código de venda é: " + farmacia.ContadorVentas);
@@ -166,13 +166,34 @@ namespace LP_TP1_Farmacia
             float totalReceber = 0;
             foreach (Medicamento medicamento in devolucao)
             {
-                totalReceber += (medicamento.Preco * medicamento.Quantidade);
-                foreach(Medicamento medicamentoVenda in venda.Medicamentos)
+                if (venda.IsReceita)
                 {
-                    if (medicamento.Codigo == medicamentoVenda.Codigo)
+                    foreach (Medicamento medicamentoVenda in venda.Medicamentos)
                     {
-                        medicamentoVenda.Quantidade -= medicamento.Quantidade;
-                        break;
+                        if ((medicamento.Codigo == medicamentoVenda.Codigo) && (medicamento.Tipo == false))
+                        {
+                            totalReceber += (medicamento.Preco * medicamento.Quantidade);
+                            medicamentoVenda.Quantidade -= medicamento.Quantidade;
+                            break;
+                        }
+                        else if ((medicamento.Codigo == medicamentoVenda.Codigo) && (medicamento.Tipo == true))
+                        {
+                            totalReceber += ((medicamento.Preco - (medicamento.Preco * 0.5f)) * medicamento.Quantidade);
+                            medicamentoVenda.Quantidade -= medicamento.Quantidade;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (Medicamento medicamentoVenda in venda.Medicamentos)
+                    {
+                        if (medicamento.Codigo == medicamentoVenda.Codigo)
+                        {
+                            totalReceber += (medicamento.Preco * medicamento.Quantidade);
+                            medicamentoVenda.Quantidade -= medicamento.Quantidade;
+                            break;
+                        }
                     }
                 }
                 farmacia.reporStock(farmacia.obterMedicamento(medicamento.Codigo), medicamento.Quantidade);
@@ -292,14 +313,16 @@ namespace LP_TP1_Farmacia
         private int codigoCliente;
         private List<Medicamento> medicamentos;
         private float totalPago;
+        private bool isReceita;
 
         //Construtor
-        public Venda(int codigo, int codigoCliente, List<Medicamento> medicamentos, float totalPago)
+        public Venda(int codigo, int codigoCliente, List<Medicamento> medicamentos, float totalPago, bool isReceita)
         {
             this.codigo = codigo;
             this.codigoCliente = codigoCliente;
             this.medicamentos = medicamentos;
             this.totalPago = totalPago;
+            this.isReceita = isReceita;
         }
 
         //Gets e Sets
@@ -307,6 +330,7 @@ namespace LP_TP1_Farmacia
         public int CodigoCliente { get => codigoCliente; set => codigoCliente = value; }
         public List<Medicamento> Medicamentos { get => medicamentos; set => medicamentos = value; }
         public float TotalPago { get => totalPago; set => totalPago = value; }
+        public bool IsReceita { get => isReceita; set => isReceita = value; }
     }
 
     class Farmacia
