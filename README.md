@@ -1,2 +1,6 @@
-# LP-TP1-Farmacia
-LP1 - Trabalho prático 1 | Tema: Farmácia | Membros: António, Carlos, Hélder
+# Farmacia
+Disciplina: Linguagens de Programação
+
+Curso: Desenvolvimento Web e Multimédia
+
+Membros: Hélder, António, Carlos
